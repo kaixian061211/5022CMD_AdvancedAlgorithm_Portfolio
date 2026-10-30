@@ -49,12 +49,13 @@ class HashTable:
         self.capacity = capacity
         self.slots = [None] * capacity
         self.count = 0
+        self.deleted = 0
 
     def _find_slot(self, key):
         """Return the index of the slot holding key, or None if key is absent."""
         start = hash_key(key)
-        # Probing at most capacity slots guarantees the loop ends even if
-        # no slot is None (for example, every slot is a tombstone).
+        # insert keeps some slots None, so the loop normally stops at one;
+        # the capacity limit is only a safety net.
         for i in range(self.capacity):
             index = (start + i) % self.capacity
             slot = self.slots[index]
@@ -87,26 +88,43 @@ class HashTable:
         old_slots = self.slots
         self.capacity = new_capacity
         self.slots = [None] * new_capacity
+        self.deleted = 0
         for slot in old_slots:
             if slot is not None and slot is not DELETED:
                 index = self._find_free_slot(slot.key)
                 self.slots[index] = slot
 
+    def _make_room(self):
+        """Rebuild the table so one more key fits under MAX_LOAD_FACTOR.
+
+        If the keys alone would still be under the limit, the used slots are
+        mostly tombstones, so rebuilding at the same capacity clears them.
+        Otherwise the table grows. Without this check, a table that keeps
+        inserting and deleting would grow forever while holding few keys.
+        """
+        if (self.count + 1) / self.capacity > MAX_LOAD_FACTOR:
+            self._resize(self.capacity * 2 + 1)
+        else:
+            self._resize(self.capacity)
+
     def insert(self, key, value):
         """Store value under key and return the index of the slot used.
 
         If key is already in the table its value is replaced in place.
-        Otherwise, if adding one more entry would push the load factor above
-        MAX_LOAD_FACTOR, the table is resized first, so the slot index
-        returned is still correct after the call.
+        Otherwise, if one more entry would make the used slots (keys plus
+        tombstones) exceed MAX_LOAD_FACTOR of the capacity, the table is
+        rebuilt first, so the slot index returned is still correct after the call.
         """
         index = self._find_slot(key)
         if index is not None:
             self.slots[index].value = value
             return index
-        if (self.count + 1) / self.capacity > MAX_LOAD_FACTOR:
-            self._resize(self.capacity * 2 + 1)
+        # Tombstones count as used: like keys, they make probe sequences longer.
+        if (self.count + self.deleted + 1) / self.capacity > MAX_LOAD_FACTOR:
+            self._make_room()
         index = self._find_free_slot(key)
+        if self.slots[index] is DELETED:
+            self.deleted -= 1
         self.slots[index] = HashEntry(key, value)
         self.count += 1
         return index
@@ -137,6 +155,7 @@ class HashTable:
             return False
         self.slots[index] = DELETED
         self.count -= 1
+        self.deleted += 1
         return True
 
     def size(self):

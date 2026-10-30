@@ -146,17 +146,18 @@ class TestLinearProbing(unittest.TestCase):
         self.assertEqual(self.table.size(), 1)
         self.assertEqual(self.table.search(12), "new")
 
-    def test_search_ends_when_every_slot_is_a_tombstone(self):
-        """Searching a table with no empty slot still finishes."""
-        for key in range(11):
-            self.table.insert(key, "x")
-            self.table.delete(key)
-        self.assertIsNone(self.table.search(99))
-        self.assertEqual(self.table.insert(5, "y"), 5)
+    def test_tombstone_count(self):
+        """delete adds a tombstone; an insert that reuses it removes one."""
+        self.table.insert(1, "a")
+        self.table.insert(12, "b")
+        self.table.delete(1)
+        self.assertEqual(self.table.deleted, 1)
+        self.table.insert(23, "c")
+        self.assertEqual(self.table.deleted, 0)
 
 
 class TestResize(unittest.TestCase):
-    """The table grows before the load factor would exceed 0.7."""
+    """The table is rebuilt before keys plus tombstones would exceed 0.7 of the slots."""
 
     def test_grows_before_exceeding_limit(self):
         """In 11 slots, 7 keys fit (0.64); the 8th (0.73) triggers a resize to 23."""
@@ -179,16 +180,29 @@ class TestResize(unittest.TestCase):
         for number in range(1000):
             self.assertEqual(table.search(f"P{number:05d}"), number)
 
-    def test_resize_drops_tombstones(self):
-        """Deleted slots are not copied into the resized table."""
+    def test_rebuild_at_same_size_clears_tombstones(self):
+        """6 keys + 1 tombstone fill 7 of 11 slots. A 7th key would make 8 (0.73),
+        but 7 keys alone (0.64) fit, so the table is rebuilt at 11 without tombstones."""
         table = HashTable(11)
         table.insert(10, "x")
         table.delete(10)
-        for key in range(7):
+        for key in range(6):
             table.insert(key, "x")
         self.assertIn(DELETED, table.slots)
-        table.insert(7, "x")
+        table.insert(6, "x")
         self.assertNotIn(DELETED, table.slots)
+        self.assertEqual(table.deleted, 0)
+        self.assertEqual(table.capacity, 11)
+
+    def test_insert_delete_cycles_keep_empty_slots(self):
+        """Repeated insert and delete never fills every slot with tombstones,
+        and the table does not keep growing while it holds almost no keys."""
+        table = HashTable(11)
+        for key in range(100):
+            table.insert(key, "x")
+            table.delete(key)
+            self.assertIn(None, table.slots)
+        self.assertEqual(table.capacity, 11)
 
 
 if __name__ == "__main__":
