@@ -4,7 +4,7 @@ Individual portfolio for 5022CMD Advanced Algorithms (Coventry University, deliv
 
 | Folder           | Topic                                                         | Entry point                          | Status      |
 |------------------|---------------------------------------------------------------|--------------------------------------|-------------|
-| `q1_hashing`     | Hash table with linear probing, used for a pharmacy inventory | `inventory_app.py`, `experiment.py`  | In progress |
+| `q1_hashing`     | Hash table with linear probing, used for a pharmacy inventory | `inventory_app.py`, `experiment.py`  | Complete    |
 | `q2_graph`       | Directed graph of course prerequisites                        | `course_app.py`                      | In progress |
 | `q3_concurrency` | Threaded vs sequential naive recursive Fibonacci              | `fib_threads.py`                     | Complete    |
 
@@ -42,6 +42,15 @@ python inventory_app.py
 The menu starts with 10 sample products (7 medicines, 3 general items) and offers: add, search, edit, delete, list all and exit. Every product is stored in both the `HashTable` and a plain list (the 1-D array), and every change is made to both. Search shows the record and the average time, over 1,000 searches, to find it in each structure.
 
 Product IDs are 1 to 10 letters or digits and are case-insensitive (`p001` finds `P001`). Prices are entered in RM with at most 2 decimal places and dates as `YYYY-MM-DD`. When editing, pressing Enter keeps the current value.
+
+### Search experiment
+
+```
+cd q1_hashing
+python experiment.py
+```
+
+For N = 100, 1,000, 10,000 and 100,000 the program generates N synthetic products (`P000001`, `P000002`, ...) and stores the same records in a `HashTable` and a plain list. It then times searches in both for the first, middle and last inserted IDs and for an ID that is not present, averaging 1,000 searches per key with `time.perf_counter_ns()`. The results are printed as a table and saved to `q1_hashing/search_results.csv`. The sizes and the number of repeats are set by `SIZES` and `REPEATS` at the top of the file.
 
 ## Q3: Concurrency
 
