@@ -1,8 +1,3 @@
-"""Time three Fibonacci calls run in separate threads versus one after another.
-
-Run from this folder with:  python fib_threads.py
-"""
-
 import os
 import platform
 import threading
