@@ -32,6 +32,17 @@ tests/               # unittest tests
 
 Each data-structure module (`hash_table.py`, `graph.py`) is generic and has no menu or domain code, so it can be tested and reused on its own.
 
+## Q1: Hashing (pharmacy inventory)
+
+```
+cd q1_hashing
+python inventory_app.py
+```
+
+The menu starts with 10 sample products (7 medicines, 3 general items) and offers: add, search, edit, delete, list all and exit. Every product is stored in both the `HashTable` and a plain list (the 1-D array), and every change is made to both. Search shows the record and the average time, over 1,000 searches, to find it in each structure.
+
+Product IDs are 1 to 10 letters or digits and are case-insensitive (`p001` finds `P001`). Prices are entered in RM with at most 2 decimal places and dates as `YYYY-MM-DD`. When editing, pressing Enter keeps the current value.
+
 ## Q3: Concurrency
 
 ```
