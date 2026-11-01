@@ -4,6 +4,8 @@ import sys
 import tempfile
 import unittest
 
+# The programs run as plain scripts from their own folders, so the tests
+# put that folder on the import path in the same way.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "q1_hashing"))
 
 from experiment import (CSV_COLUMNS, MISSING_ID, build_inventory, keys_to_search,

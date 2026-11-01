@@ -5,6 +5,8 @@ import unittest
 from contextlib import redirect_stdout
 from unittest.mock import patch
 
+# The programs run as plain scripts from their own folders, so the tests
+# put that folder on the import path in the same way.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "q2_graph"))
 
 from course import CORE, ELECTIVE
