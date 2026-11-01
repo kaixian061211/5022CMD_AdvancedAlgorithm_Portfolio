@@ -5,7 +5,7 @@ Individual portfolio for 5022CMD Advanced Algorithms (Coventry University, deliv
 | Folder           | Topic                                                         | Entry point                          | Status      |
 |------------------|---------------------------------------------------------------|--------------------------------------|-------------|
 | `q1_hashing`     | Hash table with linear probing, used for a pharmacy inventory | `inventory_app.py`, `experiment.py`  | Complete    |
-| `q2_graph`       | Directed graph of course prerequisites                        | `course_app.py`                      | In progress |
+| `q2_graph`       | Directed graph of course prerequisites                        | `course_app.py`                      | Complete    |
 | `q3_concurrency` | Threaded vs sequential naive recursive Fibonacci              | `fib_threads.py`                     | Complete    |
 
 ## Requirements
@@ -61,7 +61,18 @@ python course_app.py
 
 The program starts with 10 courses (7 core, 3 elective) and 11 prerequisite links. Each course is a vertex in a directed `Graph`, and each edge points from a prerequisite to the course it unlocks. A course's prerequisites are therefore its incoming vertices, and the courses it unlocks are its outgoing vertices.
 
-The menu offers: list all course names, view the full details of a course, view its prerequisites, and view the courses it unlocks. Course codes are case-insensitive (`cs201` finds `CS201`). The graph stores neighbours in sets, which have no fixed order, so every list is sorted by course code before it is printed and the output is the same on every run.
+Menu options:
+
+1. List all course names.
+2. View the full details of a course (every field, whatever its level).
+3. View a course's prerequisites.
+4. View the courses a course unlocks.
+5. Add a course (code, name, credit hours, level and description, each validated; duplicate codes are refused).
+6. View a course profile, which respects visibility: a core course shows every field, an elective shows its name only.
+7. Add a prerequisite. This is refused if the two courses are the same, if the prerequisite already exists, or if it would create a cycle. The cycle check uses the graph's depth-first `hasPath`: making Y a prerequisite of X adds the edge Y -> X, which closes a cycle exactly when a path from X to Y already exists.
+8. Remove a prerequisite.
+
+Course codes are case-insensitive (`cs201` finds `CS201`). The graph stores neighbours in sets, which have no fixed order, so every list is sorted by course code before it is printed and the output is the same on every run.
 
 ## Q3: Concurrency
 

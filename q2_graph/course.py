@@ -53,3 +53,10 @@ class Course:
             ("Level", self.level.capitalize()),
             ("Description", self.description),
         ]
+
+    def profile(self):
+        """Return the fields shown in a profile: all of them for a core course,
+        only the name for an elective."""
+        if self.level == CORE:
+            return self.details()
+        return [("Name", self.name)]

@@ -67,6 +67,16 @@ class TestCourseFields(unittest.TestCase):
             ("Description", "Web apps."),
         ])
 
+    def test_core_profile_shows_everything(self):
+        """A core course's profile is its full details."""
+        course = make_course("CS301", "Advanced Algorithms", CORE)
+        self.assertEqual(course.profile(), course.details())
+
+    def test_elective_profile_shows_name_only(self):
+        """An elective's profile is just its name."""
+        course = make_course("CS302", "Web Development", ELECTIVE)
+        self.assertEqual(course.profile(), [("Name", "Web Development")])
+
 
 if __name__ == "__main__":
     unittest.main()
