@@ -25,7 +25,7 @@ MENU = """
   3. Edit a product
   4. Delete a product
   5. List all products
-  6. Exit"""
+  0. Exit"""
 
 
 def parse_product_id(text):
@@ -209,7 +209,7 @@ def ask_existing_product(table):
     product_id = read_value("Product ID", parse_product_id, ID_ERROR)
     product = table.search(product_id)
     if product is None:
-        print(f"No product with ID {product_id}.")
+        print(f"No product with ID {product_id}. Option 5 lists all products.")
     return product
 
 
@@ -232,7 +232,7 @@ def search_product(table, products):
     list_ns = time_list_search(products, product_id, SEARCH_REPEATS)
     product = table.search(product_id)
     if product is None:
-        print(f"No product with ID {product_id}.")
+        print(f"No product with ID {product_id}. Option 5 lists all products.")
     else:
         print_details(product)
     print(f"  Average search time over {SEARCH_REPEATS:,} searches:")
@@ -289,7 +289,7 @@ def run_menu(table, products):
     """Show the menu and carry out the user's choices until they choose Exit."""
     while True:
         print(MENU)
-        choice = input("Choose an option (1-6): ").strip()
+        choice = input("Choose an option (0-5): ").strip()
         if choice == "1":
             add_product(table, products)
         elif choice == "2":
@@ -300,11 +300,11 @@ def run_menu(table, products):
             delete_product(table, products)
         elif choice == "5":
             list_products(table, products)
-        elif choice == "6":
+        elif choice == "0":
             print("Goodbye.")
             return
         else:
-            print("Please enter a number from 1 to 6.")
+            print("Please enter a number from 0 to 5.")
 
 
 def main():
