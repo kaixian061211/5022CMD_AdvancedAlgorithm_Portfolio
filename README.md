@@ -52,6 +52,17 @@ python experiment.py
 
 For N = 100, 1,000, 10,000 and 100,000 the program generates N synthetic products (`P000001`, `P000002`, ...) and stores the same records in a `HashTable` and a plain list. It then times searches in both for the first, middle and last inserted IDs and for an ID that is not present, averaging 1,000 searches per key with `time.perf_counter_ns()`. The results are printed as a table and saved to `q1_hashing/search_results.csv`. The sizes and the number of repeats are set by `SIZES` and `REPEATS` at the top of the file.
 
+## Q2: Graph (course prerequisites)
+
+```
+cd q2_graph
+python course_app.py
+```
+
+The program starts with 10 courses (7 core, 3 elective) and 11 prerequisite links. Each course is a vertex in a directed `Graph`, and each edge points from a prerequisite to the course it unlocks. A course's prerequisites are therefore its incoming vertices, and the courses it unlocks are its outgoing vertices.
+
+The menu offers: list all course names, view the full details of a course, view its prerequisites, and view the courses it unlocks. Course codes are case-insensitive (`cs201` finds `CS201`). The graph stores neighbours in sets, which have no fixed order, so every list is sorted by course code before it is printed and the output is the same on every run.
+
 ## Q3: Concurrency
 
 ```
