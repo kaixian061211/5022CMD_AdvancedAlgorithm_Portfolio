@@ -151,5 +151,60 @@ class TestEdges(unittest.TestCase):
         self.assertTrue(self.graph.hasEdge("A", "B"))
 
 
+class TestHasPath(unittest.TestCase):
+    """hasPath follows edge directions and copes with cycles."""
+
+    def setUp(self):
+        """Build A -> B -> C -> D, plus A -> C, and a separate vertex E."""
+        self.graph = Graph()
+        for vertex in ["A", "B", "C", "D", "E"]:
+            self.graph.addVertex(vertex)
+        self.graph.addEdge("A", "B")
+        self.graph.addEdge("B", "C")
+        self.graph.addEdge("C", "D")
+        self.graph.addEdge("A", "C")
+
+    def test_direct_edge(self):
+        """One edge is a path."""
+        self.assertTrue(self.graph.hasPath("A", "B"))
+
+    def test_path_over_several_edges(self):
+        """A reaches D through B and C."""
+        self.assertTrue(self.graph.hasPath("A", "D"))
+        self.assertTrue(self.graph.hasPath("B", "D"))
+
+    def test_direction_matters(self):
+        """Edges only lead forwards, so D cannot reach A."""
+        self.assertFalse(self.graph.hasPath("D", "A"))
+        self.assertFalse(self.graph.hasPath("C", "B"))
+
+    def test_unconnected_vertex(self):
+        """E has no edges, so nothing reaches it and it reaches nothing else."""
+        self.assertFalse(self.graph.hasPath("A", "E"))
+        self.assertFalse(self.graph.hasPath("E", "A"))
+
+    def test_vertex_reaches_itself(self):
+        """A path with no edges leads from a vertex to itself."""
+        self.assertTrue(self.graph.hasPath("E", "E"))
+
+    def test_search_ends_in_a_cycle(self):
+        """With a cycle B -> C -> B, a search for an unreachable vertex still finishes."""
+        self.graph.addEdge("C", "B")
+        self.assertFalse(self.graph.hasPath("B", "E"))
+        self.assertTrue(self.graph.hasPath("D", "D"))
+
+    def test_detects_edge_that_would_close_a_cycle(self):
+        """Adding D -> A would close the cycle A -> ... -> D -> A, because hasPath(A, D)."""
+        self.assertTrue(self.graph.hasPath("A", "D"))
+        self.assertFalse(self.graph.hasPath("D", "A"))
+
+    def test_missing_vertex(self):
+        """Either vertex missing raises KeyError."""
+        with self.assertRaises(KeyError):
+            self.graph.hasPath("A", "Z")
+        with self.assertRaises(KeyError):
+            self.graph.hasPath("Z", "A")
+
+
 if __name__ == "__main__":
     unittest.main()

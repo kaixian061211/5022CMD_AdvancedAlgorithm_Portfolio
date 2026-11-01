@@ -80,3 +80,29 @@ class Graph:
         """
         self._checkVertex(vertex)
         return list(self.incoming[vertex])
+
+    def hasPath(self, source, target):
+        """Return True if target can be reached from source by following edges.
+
+        Uses depth-first search: the stack is last-in, first-out, so the search
+        follows one route as far as it goes before trying another. A vertex
+        reaches itself by a path with no edges. The visited set stops the
+        search going round a cycle forever and means each vertex is expanded
+        at most once, so the search is O(V + E).
+        Raises KeyError if either vertex is not in the graph.
+        """
+        self._checkVertex(source)
+        self._checkVertex(target)
+        visited = set()
+        stack = [source]
+        while stack:
+            vertex = stack.pop()
+            if vertex == target:
+                return True
+            if vertex in visited:
+                continue
+            visited.add(vertex)
+            for neighbour in self.outgoing[vertex]:
+                if neighbour not in visited:
+                    stack.append(neighbour)
+        return False
