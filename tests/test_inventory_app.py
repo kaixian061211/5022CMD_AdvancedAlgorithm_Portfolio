@@ -7,13 +7,16 @@ from datetime import date
 from decimal import Decimal
 from unittest.mock import patch
 
+# The programs run as plain scripts from their own folders, so the tests
+# put that folder on the import path in the same way.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "q1_hashing"))
 
 from hash_table import HashTable
 from inventory_app import (delete_product, edit_product, linear_search,
                            parse_date, parse_price, parse_product_id,
                            parse_quantity, parse_text, parse_yes_no,
-                           read_value, sample_products, store_product)
+                           read_value, run_menu, sample_products,
+                           store_product)
 
 
 def run_with_input(function, answers, *args):
@@ -139,6 +142,25 @@ class TestInventorySync(unittest.TestCase):
         run_with_input(delete_product, ["P002", "n"], self.table, self.products)
         self.assertIsNotNone(self.table.search("P002"))
         self.assert_in_sync()
+
+
+class TestMenu(unittest.TestCase):
+    """The main menu rejects unknown options and exits on 0."""
+
+    def test_menu_survives_bad_input(self):
+        """Unknown options and IDs are reported, and 0 exits normally."""
+        table = HashTable()
+        products = []
+        for product in sample_products():
+            store_product(table, products, product)
+        answers = ["abc", "6", "", "3", "P999", "0"]
+        output = io.StringIO()
+        with patch("builtins.input", side_effect=answers):
+            with redirect_stdout(output):
+                run_menu(table, products)
+        self.assertEqual(output.getvalue().count("Please enter a number from 0 to 5."), 3)
+        self.assertIn("No product with ID P999. Option 5 lists all products.", output.getvalue())
+        self.assertIn("Goodbye.", output.getvalue())
 
 
 if __name__ == "__main__":

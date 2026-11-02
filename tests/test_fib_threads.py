@@ -4,6 +4,8 @@ import os
 import sys
 import unittest
 
+# The programs run as plain scripts from their own folders, so the tests
+# put that folder on the import path in the same way.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "q3_concurrency"))
 
 from fib_threads import (FibCall, percent_difference, run_sequential,
